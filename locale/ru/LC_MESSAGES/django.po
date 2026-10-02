@@ -1,0 +1,91 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ru\n"
+
+msgid "Boshqaruv paneli"
+msgstr "Панель управления"
+
+msgid "Donor bo'lish"
+msgstr "Стать донором"
+
+msgid "Kirish"
+msgstr "Войти"
+
+msgid "Shoshilinch qon so'rovlarini potentsial donorlar bilan bog'laydi."
+msgstr "Связывает срочные запросы на кровь с потенциальными донорами."
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Зарегистрироваться"
+
+msgid "Sizning boshqaruv paneli"
+msgstr "Ваша панель управления"
+
+msgid "Xush kelibsiz"
+msgstr "Добро пожаловать"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Ism"
+msgstr "Имя"
+
+msgid "Familiya"
+msgstr "Фамилия"
+
+msgid "Qon guruhi"
+msgstr "Группа крови"
+
+msgid "Shahar"
+msgstr "Город"
+
+msgid "Tuman"
+msgstr "Район"
+
+msgid "Kenglik (latitude)"
+msgstr "Широта (latitude)"
+
+msgid "Google Maps'da joyingizni uzoq bosing va chiqqan raqamlarning birinchisini shu yerga yozing."
+msgstr "Долго нажмите на своё местоположение в Google Maps и впишите сюда первое из появившихся чисел."
+
+msgid "Uzunlik (longitude)"
+msgstr "Долгота (longitude)"
+
+msgid "Ikkinchi raqamni shu yerga yozing."
+msgstr "Впишите сюда второе число."
+
+msgid "Oxirgi qon topshirgan sana"
+msgstr "Дата последней сдачи крови"
+
+msgid "Ma'lumotlarim donor sifatida kerak bo'lganda ishlatilishiga roziman."
+msgstr "Я согласен(на), чтобы мои данные использовались при поиске донора."
+
+msgid "Oddiy"
+msgstr "Обычный"
+
+msgid "Shoshilinch"
+msgstr "Срочно"
+
+msgid "Kritik"
+msgstr "Критично"
+
+msgid "Ochiq"
+msgstr "Открыт"
+
+msgid "Moslashtirilgan"
+msgstr "Сопоставлен"
+
+msgid "Yopiq"
+msgstr "Закрыт"
+
+msgid "Muddati tugagan"
+msgstr "Истёк срок"
+
+msgid "Xabar berildi"
+msgstr "Уведомлён"
+
+msgid "Javob berdi"
+msgstr "Ответил"
+
+msgid "Rad etdi"
+msgstr "Отказался"

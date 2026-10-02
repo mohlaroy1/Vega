@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h1>Vega</h1>
+<p class="lead">{% trans "Shoshilinch qon so'rovlarini potentsial donorlar bilan bog'laydi." %}</p>
+<a href="{% url 'register_donor' %}" class="button">{% trans "Donor bo'lish" %}</a>
+{% endblock %}

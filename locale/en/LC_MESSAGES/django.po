@@ -1,0 +1,91 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "Boshqaruv paneli"
+msgstr "Dashboard"
+
+msgid "Donor bo'lish"
+msgstr "Become a donor"
+
+msgid "Kirish"
+msgstr "Log in"
+
+msgid "Shoshilinch qon so'rovlarini potentsial donorlar bilan bog'laydi."
+msgstr "Connects urgent blood requests with potential donors."
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Register"
+
+msgid "Sizning boshqaruv paneli"
+msgstr "Your dashboard"
+
+msgid "Xush kelibsiz"
+msgstr "Welcome"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Ism"
+msgstr "First name"
+
+msgid "Familiya"
+msgstr "Last name"
+
+msgid "Qon guruhi"
+msgstr "Blood type"
+
+msgid "Shahar"
+msgstr "City"
+
+msgid "Tuman"
+msgstr "District"
+
+msgid "Kenglik (latitude)"
+msgstr "Latitude"
+
+msgid "Google Maps'da joyingizni uzoq bosing va chiqqan raqamlarning birinchisini shu yerga yozing."
+msgstr "Long-press your location in Google Maps and enter the first of the two numbers shown."
+
+msgid "Uzunlik (longitude)"
+msgstr "Longitude"
+
+msgid "Ikkinchi raqamni shu yerga yozing."
+msgstr "Enter the second number here."
+
+msgid "Oxirgi qon topshirgan sana"
+msgstr "Last donation date"
+
+msgid "Ma'lumotlarim donor sifatida kerak bo'lganda ishlatilishiga roziman."
+msgstr "I agree that my information may be used to find a donor when needed."
+
+msgid "Oddiy"
+msgstr "Normal"
+
+msgid "Shoshilinch"
+msgstr "Urgent"
+
+msgid "Kritik"
+msgstr "Critical"
+
+msgid "Ochiq"
+msgstr "Open"
+
+msgid "Moslashtirilgan"
+msgstr "Matched"
+
+msgid "Yopiq"
+msgstr "Closed"
+
+msgid "Muddati tugagan"
+msgstr "Expired"
+
+msgid "Xabar berildi"
+msgstr "Notified"
+
+msgid "Javob berdi"
+msgstr "Responded"
+
+msgid "Rad etdi"
+msgstr "Declined"

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h1>{% trans "Donor bo'lish" %}</h1>
+<form method="POST" class="card-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button">{% trans "Ro'yxatdan o'tish" %}</button>
+</form>
+{% endblock %}

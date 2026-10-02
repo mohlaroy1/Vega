@@ -1,0 +1,30 @@
+#
+msgid ""
+msgstr ""
+"Language: uz\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Your password can’t be too similar to your other personal information."
+msgstr ""
+"Parolingiz boshqa shaxsiy ma'lumotlaringizga juda o'xshash bo'lmasligi "
+"kerak."
+
+msgid "Your password can’t be a commonly used password."
+msgstr "Parolingiz keng tarqalgan parol bo'lmasligi kerak."
+
+msgid "Your password can’t be entirely numeric."
+msgstr "Parolingiz faqat raqamlardan iborat bo'lmasligi kerak."
+
+msgid "Enter the same password as before, for verification."
+msgstr "Tekshirish uchun avvalgi parolni yana bir marta kiriting."
+
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+"Majburiy. 150 belgidan oshmasligi kerak. Faqat harflar, raqamlar va "
+"@/./+/-/_ belgilari."
+
+msgid "Your password must contain at least %(min_length)d character."
+msgid_plural "Your password must contain at least %(min_length)d characters."
+msgstr[0] ""
+"Parolingiz kamida %(min_length)d ta belgidan iborat bo'lishi kerak."

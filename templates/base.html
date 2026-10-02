@@ -1,0 +1,39 @@
+{% load i18n %}{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Vega{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="brand">Vega</a>
+    <form action="{% url 'set_language' %}" method="post" class="lang-form">
+        {% csrf_token %}
+        <select name="language" onchange="this.form.submit()">
+            {% get_current_language as CURRENT_LANGUAGE %}
+            {% get_available_languages as LANGUAGES %}
+            {% for lang_code, lang_name in LANGUAGES %}
+                <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>
+                    {{ lang_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    <div class="nav-links">
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}">{% trans "Boshqaruv paneli" %}</a>
+        {% else %}
+            <a href="{% url 'register_donor' %}">{% trans "Donor bo'lish" %}</a>
+            <a href="{% url 'login' %}">{% trans "Kirish" %}</a>
+        {% endif %}
+    </div>
+</nav>
+
+<main class="container">
+{% block content %}{% endblock %}
+</main>
+
+</body>
+</html>
