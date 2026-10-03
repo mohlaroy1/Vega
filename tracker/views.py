@@ -1,9 +1,9 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import BloodRequestForm, DonorRegistrationForm
-from .models import DonorProfile
+from .models import DonorProfile, Match
 
 
 def home(request):
@@ -38,7 +38,18 @@ def register_donor(request):
 
 @login_required
 def dashboard(request):
-    return render(request, "dashboard.html")
+    donor_profile = DonorProfile.objects.filter(user=request.user).first()
+    my_matches = None
+    if donor_profile:
+        my_matches = donor_profile.matches.select_related(
+            "blood_request"
+        ).order_by("-created_at")
+
+    return render(
+        request,
+        "dashboard.html",
+        {"donor_profile": donor_profile, "my_matches": my_matches},
+    )
 
 
 @login_required
@@ -71,3 +82,19 @@ def request_detail(request, request_id):
         return redirect("home")
 
     return render(request, "requests/detail.html", {"blood_request": blood_request})
+
+
+@login_required
+def respond_to_match(request, match_id, response):
+    match = get_object_or_404(Match, id=match_id)
+
+    if request.user != match.donor.user:
+        return redirect("home")
+
+    if response == "accept":
+        match.status = Match.Status.RESPONDED
+    elif response == "decline":
+        match.status = Match.Status.DECLINED
+
+    match.save()
+    return redirect("dashboard")

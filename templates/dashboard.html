@@ -3,4 +3,21 @@
 {% block content %}
 <h1>{% trans "Sizning boshqaruv paneli" %}</h1>
 <p>{% trans "Xush kelibsiz" %}, {{ user.first_name }}.</p>
+
+{% if donor_profile %}
+<h2>{% trans "Sizga mos so'rovlar" %}</h2>
+{% for match in my_matches %}
+<div class="card-form" style="margin-bottom: 16px;">
+    <p><strong>{% trans "Shifoxona" %}:</strong> {{ match.blood_request.hospital_name }}</p>
+    <p><strong>{% trans "Masofa" %}:</strong> {{ match.distance_km }} km</p>
+    <p><strong>{% trans "Holat" %}:</strong> {{ match.get_status_display }}</p>
+    {% if match.status == "notified" or match.status == "pending_notification" %}
+    <a href="{% url 'respond_to_match' match.id 'accept' %}" class="button">{% trans "Yordam bera olaman" %}</a>
+    <a href="{% url 'respond_to_match' match.id 'decline' %}">{% trans "Yordam bera olmayman" %}</a>
+    {% endif %}
+</div>
+{% empty %}
+<p>{% trans "Hozircha mos so'rovlar yo'q." %}</p>
+{% endfor %}
+{% endif %}
 {% endblock %}
