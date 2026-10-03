@@ -3,7 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
-from .models import DonorProfile
+from datetime import timedelta
+
+from django.utils import timezone
+
+from .models import BloodRequest, DonorProfile
 
 
 class DonorRegistrationForm(UserCreationForm):
@@ -58,3 +62,37 @@ class DonorRegistrationForm(UserCreationForm):
             "password1",
             "password2",
         )
+
+
+class BloodRequestForm(forms.ModelForm):
+
+    class Meta:
+        model = BloodRequest
+        fields = (
+            "blood_type",
+            "hospital_name",
+            "hospital_address",
+            "latitude",
+            "longitude",
+            "urgency",
+            "description",
+        )
+        labels = {
+            "blood_type": _("Qon guruhi"),
+            "hospital_name": _("Shifoxona nomi"),
+            "hospital_address": _("Shifoxona manzili"),
+            "latitude": _("Kenglik (latitude)"),
+            "longitude": _("Uzunlik (longitude)"),
+            "urgency": _("Shoshilinchlik darajasi"),
+            "description": _("Qo'shimcha ma'lumot"),
+        }
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 4}),
+        }
+
+    def save(self, commit=True):
+        blood_request = super().save(commit=False)
+        blood_request.expires_at = timezone.now() + timedelta(hours=24)
+        if commit:
+            blood_request.save()
+        return blood_request

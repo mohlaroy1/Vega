@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h1>{% trans "Qon so'rash" %}</h1>
+<form method="POST" class="card-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button">{% trans "So'rov yuborish" %}</button>
+</form>
+<p class="lead">
+    {% trans "So'rovingiz tasdiqlangandan so'ng donorlarga xabar yuboriladi." %}
+</p>
+{% endblock %}
