@@ -71,3 +71,10 @@ def create_matches(blood_request):
         matches.append(match)
 
     return matches
+
+
+def is_request_active(blood_request):
+    return (
+        blood_request.status == blood_request.Status.OPEN
+        and blood_request.expires_at > timezone.now()
+    )

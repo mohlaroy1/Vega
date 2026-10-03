@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import BloodRequestForm, DonorRegistrationForm
+from .matching import is_request_active
 from .models import DonorProfile, Match
 
 
@@ -81,7 +82,14 @@ def request_detail(request, request_id):
     if not (is_owner or is_staff):
         return redirect("home")
 
-    return render(request, "requests/detail.html", {"blood_request": blood_request})
+    return render(
+        request,
+        "requests/detail.html",
+        {
+            "blood_request": blood_request,
+            "is_active": is_request_active(blood_request),
+        },
+    )
 
 
 @login_required

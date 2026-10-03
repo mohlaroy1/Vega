@@ -9,6 +9,7 @@
 
 <nav class="navbar">
     <a href="{% url 'home' %}" class="brand">Vega</a>
+    <a href="{% url 'safety' %}" style="margin-left: 16px;">{% trans "Xavfsizlik" %}</a>
     <form action="{% url 'set_language' %}" method="post" class="lang-form">
         {% csrf_token %}
         <select name="language" onchange="this.form.submit()">
