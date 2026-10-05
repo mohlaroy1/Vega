@@ -1,7 +1,8 @@
+#
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
 "Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Boshqaruv paneli"
 msgstr "Dashboard"
@@ -45,8 +46,12 @@ msgstr "District"
 msgid "Kenglik (latitude)"
 msgstr "Latitude"
 
-msgid "Google Maps'da joyingizni uzoq bosing va chiqqan raqamlarning birinchisini shu yerga yozing."
-msgstr "Long-press your location in Google Maps and enter the first of the two numbers shown."
+msgid ""
+"Google Maps'da joyingizni uzoq bosing va chiqqan raqamlarning birinchisini "
+"shu yerga yozing."
+msgstr ""
+"Long-press your location in Google Maps and enter the first of the two "
+"numbers shown."
 
 msgid "Uzunlik (longitude)"
 msgstr "Longitude"
@@ -89,3 +94,101 @@ msgstr "Responded"
 
 msgid "Rad etdi"
 msgstr "Declined"
+
+msgid "Shifoxona nomi"
+msgstr "Hospital name"
+
+msgid "Shifoxona manzili"
+msgstr "Hospital address"
+
+msgid "Shoshilinchlik darajasi"
+msgstr "Urgency level"
+
+msgid "Qo'shimcha ma'lumot"
+msgstr "Additional information"
+
+msgid "Qon so'rash"
+msgstr "Request blood"
+
+msgid "So'rov yuborish"
+msgstr "Submit request"
+
+msgid "So'rovingiz tasdiqlangandan so'ng donorlarga xabar yuboriladi."
+msgstr "Once your request is verified, donors will be notified."
+
+msgid "So'rov holati"
+msgstr "Request status"
+
+msgid "Shifoxona"
+msgstr "Hospital"
+
+msgid "Shoshilinchlik"
+msgstr "Urgency"
+
+msgid "Tasdiqlangan"
+msgstr "Verified"
+
+msgid "Sizga mos so'rovlar"
+msgstr "Requests matched to you"
+
+msgid "Masofa"
+msgstr "Distance"
+
+msgid "Holat"
+msgstr "Status"
+
+msgid "Yordam bera olaman"
+msgstr "I can help"
+
+msgid "Yordam bera olmayman"
+msgstr "I can't help"
+
+msgid "Hozircha mos so'rovlar yo'q."
+msgstr "No matching requests yet."
+
+msgid "Muhim xavfsizlik ma'lumoti"
+msgstr "Important safety information"
+
+msgid "Vega — donorlarni muvofiqlashtirish platformasi."
+msgstr "Vega is a donor coordination platform."
+
+msgid ""
+"Vega biror shaxsning qon topshirishga tibbiy jihatdan mos yoki mos "
+"emasligini aniqlamaydi."
+msgstr ""
+"Vega does not determine whether a person is medically eligible to donate "
+"blood."
+
+msgid ""
+"Vega tomonidan ko'rsatilgan potentsial moslik donorlik xavfsiz, maqsadga "
+"muvofiq yoki tibbiy jihatdan mumkin ekanligini kafolatlamaydi."
+msgstr ""
+"A potential match shown by Vega does not guarantee that donation is safe, "
+"appropriate, or medically possible."
+
+msgid ""
+"Donorlar malakali tibbiyot xodimlarining ko'rsatmalariga amal qilishlari "
+"shart."
+msgstr ""
+"Donors must follow the instructions of qualified medical professionals."
+
+msgid "Yakuniy tibbiy qarorni faqat qon markazi xodimlari qabul qiladi."
+msgstr "The final medical decision is made only by blood center staff."
+
+msgid "Xavfsizlik"
+msgstr "Safety"
+
+msgid "Hozir faol"
+msgstr "Currently active"
+
+msgid "Xabar kutilmoqda"
+msgstr "Pending notification"
+
+msgid "Ha"
+msgstr "Yes"
+
+msgid "Yo'q — ko'rib chiqilmoqda"
+msgstr "No — under review"
+
+msgid "Yo'q"
+msgstr "No"

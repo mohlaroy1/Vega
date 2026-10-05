@@ -7,10 +7,10 @@
 {% if donor_profile %}
 <h2>{% trans "Sizga mos so'rovlar" %}</h2>
 {% for match in my_matches %}
-<div class="card-form" style="margin-bottom: 16px;">
+<div class="match-card">
     <p><strong>{% trans "Shifoxona" %}:</strong> {{ match.blood_request.hospital_name }}</p>
     <p><strong>{% trans "Masofa" %}:</strong> {{ match.distance_km }} km</p>
-    <p><strong>{% trans "Holat" %}:</strong> {{ match.get_status_display }}</p>
+    <p><strong>{% trans "Holat" %}:</strong> <span class="status-pill status-{{ match.status }}">{{ match.get_status_display }}</span></p>
     {% if match.status == "notified" or match.status == "pending_notification" %}
     <a href="{% url 'respond_to_match' match.id 'accept' %}" class="button">{% trans "Yordam bera olaman" %}</a>
     <a href="{% url 'respond_to_match' match.id 'decline' %}">{% trans "Yordam bera olmayman" %}</a>

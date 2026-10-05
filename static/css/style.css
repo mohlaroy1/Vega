@@ -113,3 +113,34 @@ h1 {
 }
 
 .button:hover { background: var(--primary-dark); }
+
+.card-form p {
+    margin-bottom: 12px;
+}
+
+.match-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+}
+
+.match-card .button {
+    margin-right: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-notified { background: #fff3cd; color: #856404; }
+.status-responded { background: #d4edda; color: #2e7d32; }
+.status-declined { background: #f8d7da; color: #c0392b; }
+.status-pending_notification { background: #e2e3e5; color: #495057; }

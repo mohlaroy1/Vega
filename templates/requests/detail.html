@@ -2,9 +2,23 @@
 {% load i18n %}
 {% block content %}
 <h1>{% trans "So'rov holati" %}</h1>
-<p><strong>{% trans "Qon guruhi" %}:</strong> {{ blood_request.blood_type }}</p>
-<p><strong>{% trans "Shifoxona" %}:</strong> {{ blood_request.hospital_name }}</p>
-<p><strong>{% trans "Shoshilinchlik" %}:</strong> {{ blood_request.get_urgency_display }}</p>
-<p><strong>{% trans "Tasdiqlangan" %}:</strong> {{ blood_request.verified }}</p>
-<p><strong>{% trans "Hozir faol" %}:</strong> {{ is_active }}</p>
+<div class="card-form">
+    <p><strong>{% trans "Qon guruhi" %}:</strong> {{ blood_request.blood_type }}</p>
+    <p><strong>{% trans "Shifoxona" %}:</strong> {{ blood_request.hospital_name }}</p>
+    <p><strong>{% trans "Shoshilinchlik" %}:</strong> {{ blood_request.get_urgency_display }}</p>
+    <p><strong>{% trans "Tasdiqlangan" %}:</strong>
+        {% if blood_request.verified %}
+            <span style="color: #2e7d32;">{% trans "Ha" %}</span>
+        {% else %}
+            <span style="color: #c0392b;">{% trans "Yo'q — ko'rib chiqilmoqda" %}</span>
+        {% endif %}
+    </p>
+    <p><strong>{% trans "Hozir faol" %}:</strong>
+        {% if is_active %}
+            <span style="color: #2e7d32;">{% trans "Ha" %}</span>
+        {% else %}
+            <span style="color: #c0392b;">{% trans "Yo'q" %}</span>
+        {% endif %}
+    </p>
+</div>
 {% endblock %}
