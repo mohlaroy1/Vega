@@ -5,18 +5,34 @@ from django.utils import timezone
 from .models import DonorProfile, Match
 
 
+# Preliminary red blood cell donor compatibility.
+# Clinical staff must confirm compatibility before transfusion.
+COMPATIBLE_DONORS = {
+    "O-": ["O-"],
+    "O+": ["O-", "O+"],
+    "A-": ["O-", "A-"],
+    "A+": ["O-", "O+", "A-", "A+"],
+    "B-": ["O-", "B-"],
+    "B+": ["O-", "O+", "B-", "B+"],
+    "AB-": ["O-", "A-", "B-", "AB-"],
+    "AB+": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+}
+
+
 def calculate_distance(lat1, lon1, lat2, lon2):
     earth_radius = 6371
 
-    lat1 = radians(lat1)
-    lat2 = radians(lat2)
-    delta_lat = radians(lat2 - lat1)
-    delta_lon = radians(lon2 - lon1)
+    lat1, lon1 = radians(lat1), radians(lon1)
+    lat2, lon2 = radians(lat2), radians(lon2)
+
+    delta_lat = lat2 - lat1
+    delta_lon = lon2 - lon1
 
     a = (
         sin(delta_lat / 2) ** 2
         + cos(lat1) * cos(lat2) * sin(delta_lon / 2) ** 2
     )
+    a = max(0, min(1, a))
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
     return earth_radius * c
@@ -25,15 +41,15 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def find_potential_donors(blood_request):
     # Nothing happens until a human (you, via admin) verifies the
     # request. This is the safety gate — never remove this check.
-    if not blood_request.verified:
+    if not blood_request.verified or not is_request_active(blood_request):
         return []
 
-    # An expired request shouldn't match either, even if re-run.
-    if blood_request.expires_at <= timezone.now():
-        return []
+    compatible_types = COMPATIBLE_DONORS.get(
+        blood_request.blood_type, []
+    )
 
     donors = DonorProfile.objects.filter(
-        blood_type=blood_request.blood_type,
+        blood_type__in=compatible_types,
         available=True,
         consent=True,
         latitude__isnull=False,

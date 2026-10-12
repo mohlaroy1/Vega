@@ -52,6 +52,23 @@ class DonorRegistrationForm(UserCreationForm):
         ),
     )
 
+
+    def clean_latitude(self):
+        latitude = self.cleaned_data["latitude"]
+        if not -90 <= latitude <= 90:
+            raise forms.ValidationError(
+                "Latitude must be between -90 and 90."
+            )
+        return latitude
+
+    def clean_longitude(self):
+        longitude = self.cleaned_data["longitude"]
+        if not -180 <= longitude <= 180:
+            raise forms.ValidationError(
+                "Longitude must be between -180 and 180."
+            )
+        return longitude
+
     class Meta:
         model = User
         fields = (
@@ -89,6 +106,23 @@ class BloodRequestForm(forms.ModelForm):
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
         }
+
+
+    def clean_latitude(self):
+        latitude = self.cleaned_data["latitude"]
+        if not -90 <= latitude <= 90:
+            raise forms.ValidationError(
+                "Latitude must be between -90 and 90."
+            )
+        return latitude
+
+    def clean_longitude(self):
+        longitude = self.cleaned_data["longitude"]
+        if not -180 <= longitude <= 180:
+            raise forms.ValidationError(
+                "Longitude must be between -180 and 180."
+            )
+        return longitude
 
     def save(self, commit=True):
         blood_request = super().save(commit=False)

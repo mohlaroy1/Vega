@@ -1,6 +1,7 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .forms import BloodRequestForm, DonorRegistrationForm
 from .matching import is_request_active
@@ -92,17 +93,31 @@ def request_detail(request, request_id):
     )
 
 
+
 @login_required
+@require_POST
 def respond_to_match(request, match_id, response):
-    match = get_object_or_404(Match, id=match_id)
+    match = get_object_or_404(
+        Match.objects.select_related("donor__user", "blood_request"),
+        id=match_id,
+    )
 
     if request.user != match.donor.user:
         return redirect("home")
 
+    if response not in ("accept", "decline"):
+        return redirect("dashboard")
+
+    if not is_request_active(match.blood_request):
+        return redirect("dashboard")
+
+    if match.status != Match.Status.NOTIFIED:
+        return redirect("dashboard")
+
     if response == "accept":
         match.status = Match.Status.RESPONDED
-    elif response == "decline":
+    else:
         match.status = Match.Status.DECLINED
 
-    match.save()
+    match.save(update_fields=["status"])
     return redirect("dashboard")
