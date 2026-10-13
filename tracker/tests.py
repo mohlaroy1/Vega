@@ -173,3 +173,39 @@ class MatchResponseTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.match.refresh_from_db()
         self.assertEqual(self.match.status, Match.Status.NOTIFIED)
+
+
+    
+class DonorAvailabilityTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="availability_donor",
+            password="SafeTestPass123!",
+        )
+        self.profile = DonorProfile.objects.create(
+            user=self.user,
+            blood_type="O+",
+            city="Fergana",
+            latitude=40.3864,
+            longitude=71.7864,
+            available=True,
+            consent=True,
+        )
+
+    def test_donor_can_toggle_availability_off(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("toggle_availability"))
+
+        self.assertEqual(response.status_code, 302)
+        self.profile.refresh_from_db()
+        self.assertFalse(self.profile.available)
+
+    def test_get_request_cannot_toggle_availability(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("toggle_availability"))
+
+        self.assertEqual(response.status_code, 405)
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.available)
