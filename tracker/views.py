@@ -69,6 +69,20 @@ def dashboard(request):
 
 
 @login_required
+@require_POST
+def toggle_availability(request):
+    donor_profile = get_object_or_404(
+        DonorProfile,
+        user=request.user,
+    )
+
+    donor_profile.available = not donor_profile.available
+    donor_profile.save(update_fields=["available"])
+
+    return redirect("dashboard")
+
+
+@login_required
 def create_request(request):
     if request.method == "POST":
         form = BloodRequestForm(request.POST)

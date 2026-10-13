@@ -5,6 +5,28 @@
 <p>{% trans "Xush kelibsiz" %}, {{ user.first_name }}.</p>
 
 {% if donor_profile %}
+
+
+<p>
+    <strong>{% trans "Sizning mavjudligingiz" %}:</strong>
+    {% if donor_profile.available %}
+        {% trans "Mavjud" %}
+    {% else %}
+        {% trans "Mavjud emas" %}
+    {% endif %}
+</p>
+
+<form method="post" action="{% url 'toggle_availability' %}">
+    {% csrf_token %}
+    <button type="submit">
+        {% if donor_profile.available %}
+            {% trans "Mavjud emas deb belgilash" %}
+        {% else %}
+            {% trans "Mavjud deb belgilash" %}
+        {% endif %}
+    </button>
+</form>
+
 <h2>{% trans "Sizga mos so'rovlar" %}</h2>
 {% for match in my_matches %}
 <div class="match-card">
