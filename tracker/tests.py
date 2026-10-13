@@ -143,6 +143,20 @@ class MatchResponseTests(TestCase):
         self.match.refresh_from_db()
         self.assertEqual(self.match.status, Match.Status.RESPONDED)
 
+
+    def test_donor_can_decline_match_with_post(self):
+        self.client.force_login(self.donor.user)
+
+        response = self.client.post(
+            reverse(
+                "respond_to_match",
+                args=[self.match.id, "decline"],
+            )
+        )
+
+        self.match.refresh_from_db()
+        self.assertEqual(self.match.status, Match.Status.DECLINED)
+
     def test_another_user_cannot_accept_match(self):
         self.client.force_login(self.other_user)
         response = self.client.post(self.url)
