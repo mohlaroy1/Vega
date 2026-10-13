@@ -38,19 +38,33 @@ def register_donor(request):
     return render(request, "donors/register.html", {"form": form})
 
 
+
 @login_required
 def dashboard(request):
     donor_profile = DonorProfile.objects.filter(user=request.user).first()
+
     my_matches = None
     if donor_profile:
         my_matches = donor_profile.matches.select_related(
             "blood_request"
         ).order_by("-created_at")
 
+    from .models import BloodRequest
+
+    my_requests = (
+        BloodRequest.objects.filter(requester=request.user)
+        .prefetch_related("matches__donor__user")
+        .order_by("-created_at")
+    )
+
     return render(
         request,
         "dashboard.html",
-        {"donor_profile": donor_profile, "my_matches": my_matches},
+        {
+            "donor_profile": donor_profile,
+            "my_matches": my_matches,
+            "my_requests": my_requests,
+        },
     )
 
 

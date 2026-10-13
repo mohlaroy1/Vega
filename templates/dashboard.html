@@ -32,4 +32,50 @@
 <p>{% trans "Hozircha mos so'rovlar yo'q." %}</p>
 {% endfor %}
 {% endif %}
+
+<hr>
+
+<h2>{% trans "Siz yaratgan qon so'rovlari" %}</h2>
+
+{% for blood_request in my_requests %}
+<div class="match-card">
+    <h3>{{ blood_request.hospital_name }}</h3>
+
+    <p>
+        <strong>{% trans "Qon guruhi" %}:</strong>
+        {{ blood_request.blood_type }}
+    </p>
+
+    <p>
+        <strong>{% trans "So'rov holati" %}:</strong>
+        {{ blood_request.get_status_display }}
+    </p>
+
+    <p>
+        <strong>{% trans "Tasdiqlangan" %}:</strong>
+        {% if blood_request.verified %}
+            {% trans "Ha" %}
+        {% else %}
+            {% trans "Kutilmoqda" %}
+        {% endif %}
+    </p>
+
+    <h4>{% trans "Donorlar holati" %}</h4>
+
+    {% for match in blood_request.matches.all %}
+        <p>
+            {{ match.donor.user.username }} —
+            {{ match.get_status_display }}
+        </p>
+    {% empty %}
+        <p>{% trans "Hozircha donor topilmadi." %}</p>
+    {% endfor %}
+
+    <a href="{% url 'request_detail' blood_request.id %}">
+        {% trans "So'rovni ko'rish" %}
+    </a>
+</div>
+{% empty %}
+<p>{% trans "Siz hali qon so'rovi yaratmagansiz." %}</p>
+{% endfor %}
 {% endblock %}
