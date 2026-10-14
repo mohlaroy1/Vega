@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from .forms import BloodRequestForm, DonorRegistrationForm
 from .models import BloodRequest, DonorProfile, Match
+from .matching import create_matches, find_potential_donors
 
 class DonorRegistrationFormTests(TestCase):
     def valid_data(self):
@@ -209,3 +210,120 @@ class DonorAvailabilityTests(TestCase):
         self.assertEqual(response.status_code, 405)
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.available)
+
+
+
+
+class MatchingLogicTests(TestCase):
+    def setUp(self):
+        self.requester = User.objects.create_user(
+            username="matching_requester",
+            password="SafeTestPass123!",
+        )
+
+        self.blood_request = BloodRequest.objects.create(
+            requester=self.requester,
+            blood_type="A+",
+            hospital_name="Test Hospital",
+            hospital_address="Fergana",
+            latitude=40.3864,
+            longitude=71.7864,
+            urgency="normal",
+            verified=True,
+            status=BloodRequest.Status.OPEN,
+            expires_at=timezone.now() + timedelta(hours=2),
+        )
+
+    def make_donor(
+        self,
+        username,
+        blood_type="O+",
+        available=True,
+        consent=True,
+        latitude=40.3864,
+        longitude=71.7864,
+    ):
+        user = User.objects.create_user(
+            username=username,
+            password="SafeTestPass123!",
+        )
+
+        return DonorProfile.objects.create(
+            user=user,
+            blood_type=blood_type,
+            city="Fergana",
+            latitude=latitude,
+            longitude=longitude,
+            available=available,
+            consent=consent,
+        )
+
+    def test_only_eligible_donors_are_matched(self):
+        eligible = self.make_donor("eligible_donor")
+        self.make_donor("unavailable_donor", available=False)
+        self.make_donor("no_consent_donor", consent=False)
+        self.make_donor("incompatible_donor", blood_type="B+")
+
+        results = find_potential_donors(self.blood_request)
+        donor_ids = [item["donor"].id for item in results]
+
+        self.assertEqual(donor_ids, [eligible.id])
+
+    def test_unverified_request_has_no_matches(self):
+        self.blood_request.verified = False
+        self.blood_request.save(update_fields=["verified"])
+
+        self.assertEqual(
+            find_potential_donors(self.blood_request),
+            [],
+        )
+        self.assertEqual(create_matches(self.blood_request), [])
+
+    def test_closed_request_has_no_new_matches(self):
+        self.make_donor("closed_request_donor")
+
+        self.blood_request.status = BloodRequest.Status.CLOSED
+        self.blood_request.save(update_fields=["status"])
+
+        self.assertEqual(create_matches(self.blood_request), [])
+        self.assertEqual(
+            Match.objects.filter(
+                blood_request=self.blood_request
+            ).count(),
+            0,
+        )
+
+    def test_expired_request_has_no_new_matches(self):
+        self.make_donor("expired_request_donor")
+
+        self.blood_request.expires_at = (
+            timezone.now() - timedelta(hours=1)
+        )
+        self.blood_request.save(update_fields=["expires_at"])
+
+        self.assertEqual(create_matches(self.blood_request), [])
+        self.assertEqual(
+            Match.objects.filter(
+                blood_request=self.blood_request
+            ).count(),
+            0,
+        )
+
+    def test_running_matching_twice_creates_no_duplicates(self):
+        donor = self.make_donor("duplicate_test_donor")
+
+        create_matches(self.blood_request)
+
+        # Move the donor slightly to verify the saved distance refreshes.
+        donor.latitude = 40.4
+        donor.save(update_fields=["latitude"])
+
+        create_matches(self.blood_request)
+
+        matches = Match.objects.filter(
+            blood_request=self.blood_request,
+            donor=donor,
+        )
+
+        self.assertEqual(matches.count(), 1)
+        self.assertGreater(matches.get().distance_km, 0)
