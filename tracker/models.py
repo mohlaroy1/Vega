@@ -86,6 +86,7 @@ class Match(models.Model):
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.NOTIFIED
     )
+    telegram_notified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

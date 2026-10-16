@@ -1,14 +1,15 @@
-
 from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from unittest.mock import Mock, patch
 
 from .forms import BloodRequestForm, DonorRegistrationForm
 from .models import BloodRequest, DonorProfile, Match
 from .matching import create_matches, find_potential_donors
+from .telegram import notify_donor, send_telegram_message
 
 class DonorRegistrationFormTests(TestCase):
     def valid_data(self):
@@ -327,3 +328,116 @@ class MatchingLogicTests(TestCase):
 
         self.assertEqual(matches.count(), 1)
         self.assertGreater(matches.get().distance_km, 0)
+
+
+
+
+class TelegramNotificationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="telegram_donor",
+            password="SafeTestPass123!",
+        )
+        self.donor = DonorProfile.objects.create(
+            user=self.user,
+            blood_type="O+",
+            city="Fergana",
+            latitude=40.3864,
+            longitude=71.7864,
+            available=True,
+            consent=True,
+            telegram_chat_id="123456789",
+        )
+        self.requester = User.objects.create_user(
+            username="telegram_requester",
+            password="SafeTestPass123!",
+        )
+        self.blood_request = BloodRequest.objects.create(
+            requester=self.requester,
+            blood_type="O+",
+            hospital_name="Test Hospital",
+            hospital_address="Fergana",
+            latitude=40.3864,
+            longitude=71.7864,
+            urgency="normal",
+            description="Test request",
+            verified=True,
+            status=BloodRequest.Status.OPEN,
+            expires_at=timezone.now() + timedelta(hours=12),
+        )
+        self.match = Match.objects.create(
+            blood_request=self.blood_request,
+            donor=self.donor,
+            distance_km=1.2,
+        )
+
+    @patch("tracker.telegram.requests.post")
+    def test_successful_notification_is_recorded(self, mock_post):
+        mock_response = Mock()
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {"ok": True}
+        mock_post.return_value = mock_response
+
+        self.assertTrue(notify_donor(self.match))
+
+        self.match.refresh_from_db()
+        self.assertTrue(self.match.telegram_notified)
+        mock_post.assert_called_once()
+
+    @patch("tracker.telegram.requests.post")
+    def test_failed_telegram_response_is_not_recorded(self, mock_post):
+        mock_response = Mock()
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {
+            "ok": False,
+            "description": "Test failure",
+        }
+        mock_post.return_value = mock_response
+
+        self.assertFalse(notify_donor(self.match))
+
+        self.match.refresh_from_db()
+        self.assertFalse(self.match.telegram_notified)
+
+    @patch("tracker.telegram.requests.post")
+    def test_duplicate_notification_is_not_sent(self, mock_post):
+        mock_response = Mock()
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {"ok": True}
+        mock_post.return_value = mock_response
+
+        self.assertTrue(notify_donor(self.match))
+        self.assertFalse(notify_donor(self.match))
+
+        mock_post.assert_called_once()
+
+    @patch("tracker.telegram.requests.post")
+    def test_missing_chat_id_does_not_send_message(self, mock_post):
+        self.donor.telegram_chat_id = ""
+        self.donor.save(update_fields=["telegram_chat_id"])
+
+        self.assertFalse(notify_donor(self.match))
+        mock_post.assert_not_called()
+
+    @patch("tracker.telegram.requests.post")
+    def test_unverified_request_does_not_send_message(self, mock_post):
+        self.blood_request.verified = False
+        self.blood_request.save(update_fields=["verified"])
+
+        self.assertFalse(notify_donor(self.match))
+        mock_post.assert_not_called()
+
+    @patch("tracker.telegram.requests.post")
+    def test_expired_request_does_not_send_message(self, mock_post):
+        self.blood_request.expires_at = timezone.now() - timedelta(hours=1)
+        self.blood_request.save(update_fields=["expires_at"])
+
+        self.assertFalse(notify_donor(self.match))
+        mock_post.assert_not_called()
+
+    @patch("tracker.telegram.requests.post")
+    def test_missing_bot_token_does_not_send_message(self, mock_post):
+        with self.settings(TELEGRAM_BOT_TOKEN=None):
+            self.assertFalse(send_telegram_message("123456789", "Test"))
+
+        mock_post.assert_not_called()
