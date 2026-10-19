@@ -441,3 +441,54 @@ class TelegramNotificationTests(TestCase):
             self.assertFalse(send_telegram_message("123456789", "Test"))
 
         mock_post.assert_not_called()
+
+
+
+
+class DashboardPrivacyTests(TestCase):
+    def test_requester_dashboard_does_not_expose_donor_username(self):
+        requester = User.objects.create_user(
+            username="privacy_requester",
+            password="SafeTestPass123!",
+        )
+        donor_user = User.objects.create_user(
+            username="private_donor_username",
+            password="SafeTestPass123!",
+        )
+
+        donor = DonorProfile.objects.create(
+            user=donor_user,
+            blood_type="O+",
+            city="Fergana",
+            latitude=40.3864,
+            longitude=71.7864,
+            available=True,
+            consent=True,
+        )
+
+        blood_request = BloodRequest.objects.create(
+            requester=requester,
+            blood_type="O+",
+            hospital_name="Privacy Test Hospital",
+            hospital_address="Fergana",
+            latitude=40.3864,
+            longitude=71.7864,
+            urgency="normal",
+            description="Privacy regression test",
+            verified=True,
+            status=BloodRequest.Status.OPEN,
+            expires_at=timezone.now() + timedelta(hours=12),
+        )
+
+        Match.objects.create(
+            blood_request=blood_request,
+            donor=donor,
+            distance_km=1.2,
+        )
+
+        self.client.force_login(requester)
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "private_donor_username")
+        self.assertContains(response, "Privacy Test Hospital")

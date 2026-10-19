@@ -86,8 +86,7 @@
 
     {% for match in blood_request.matches.all %}
         <p>
-            {{ match.donor.user.username }} —
-            {{ match.get_status_display }}
+            {% trans "Donor holati" %}: {{ match.get_status_display }}
         </p>
     {% empty %}
         <p>{% trans "Hozircha donor topilmadi." %}</p>
