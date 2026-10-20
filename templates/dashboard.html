@@ -1,102 +1,928 @@
+
 {% extends "base.html" %}
 {% load i18n %}
+
 {% block content %}
-<h1>{% trans "Sizning boshqaruv paneli" %}</h1>
-<p>{% trans "Xush kelibsiz" %}, {{ user.first_name }}.</p>
+<style>
+    .vega-dashboard {
+        --vega-red: #c6283d;
+        --vega-red-dark: #a91e32;
+        --vega-red-light: #fff0f2;
+        --vega-green: #18794e;
+        --vega-green-light: #e8f7ee;
+        --vega-text: #202936;
+        --vega-muted: #697586;
+        --vega-border: #e8ebf0;
+        --vega-bg: #f7f8fa;
 
-{% if donor_profile %}
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 20px 56px;
+        color: var(--vega-text);
+        font-family: inherit;
+    }
 
+    .vega-dashboard *,
+    .vega-dashboard *::before,
+    .vega-dashboard *::after {
+        box-sizing: border-box;
+    }
 
-<p>
-    <strong>{% trans "Sizning mavjudligingiz" %}:</strong>
-    {% if donor_profile.available %}
-        {% trans "Mavjud" %}
-    {% else %}
-        {% trans "Mavjud emas" %}
+    .vega-dashboard h1,
+    .vega-dashboard h2,
+    .vega-dashboard h3,
+    .vega-dashboard h4,
+    .vega-dashboard p {
+        margin-top: 0;
+    }
+
+    .vega-dashboard h1 {
+        margin-bottom: 8px;
+        font-size: clamp(1.7rem, 4vw, 2.25rem);
+        line-height: 1.2;
+        letter-spacing: -0.045em;
+    }
+
+    .vega-dashboard h2 {
+        margin-bottom: 6px;
+        font-size: 1.25rem;
+        letter-spacing: -0.025em;
+    }
+
+    .vega-dashboard h3 {
+        margin-bottom: 12px;
+        font-size: 1.05rem;
+    }
+
+    .vega-dashboard p {
+        line-height: 1.6;
+    }
+
+    .vega-muted {
+        color: var(--vega-muted);
+    }
+
+    /* Welcome section */
+
+    .vega-welcome {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .vega-welcome-copy {
+        min-width: 0;
+    }
+
+    .vega-eyebrow {
+        margin-bottom: 10px;
+        color: var(--vega-red);
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .vega-welcome-description {
+        margin-bottom: 0;
+        color: var(--vega-muted);
+    }
+
+    .vega-brand-mark {
+        display: grid;
+        width: 62px;
+        height: 62px;
+        flex-shrink: 0;
+        place-items: center;
+        border-radius: 20px;
+        background: var(--vega-red-light);
+        color: var(--vega-red);
+        font-size: 1.9rem;
+    }
+
+    /* Summary cards */
+
+    .vega-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 36px;
+    }
+
+    .vega-summary-card {
+        min-width: 0;
+        padding: 22px;
+        border: 1px solid var(--vega-border);
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 4px 16px rgb(20 30 50 / 3%);
+    }
+
+    .vega-summary-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .vega-summary-label {
+        margin-bottom: 0;
+        color: var(--vega-muted);
+        font-size: 0.9rem;
+    }
+
+    .vega-summary-icon {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        place-items: center;
+        border-radius: 13px;
+        background: var(--vega-red-light);
+        font-size: 1.25rem;
+    }
+
+    .vega-summary-number {
+        margin-bottom: 5px;
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.05em;
+        overflow-wrap: anywhere;
+    }
+
+    .vega-summary-note {
+        margin-bottom: 0;
+        color: var(--vega-muted);
+        font-size: 0.82rem;
+    }
+
+    /* Availability panel */
+
+    .vega-availability-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 38px;
+        padding: 24px;
+        border: 1px solid var(--vega-border);
+        border-radius: 18px;
+        background: #fff;
+    }
+
+    .vega-availability-copy {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        min-width: 0;
+    }
+
+    .vega-availability-copy h2 {
+        margin-bottom: 7px;
+    }
+
+    .vega-availability-copy p {
+        margin-bottom: 0;
+        color: var(--vega-muted);
+        font-size: 0.9rem;
+    }
+
+    .vega-availability-indicator {
+        width: 12px;
+        height: 12px;
+        flex-shrink: 0;
+        margin-top: 6px;
+        border-radius: 50%;
+        background: #d97706;
+        box-shadow: 0 0 0 5px #fff3db;
+    }
+
+    .vega-availability-indicator.is-available {
+        background: #169b62;
+        box-shadow: 0 0 0 5px #e1f7eb;
+    }
+
+    /* Buttons */
+
+    .vega-dashboard .vega-button {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 17px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: var(--vega-red);
+        color: #fff;
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 700;
+        line-height: 1.35;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 160ms ease, border-color 160ms ease,
+                    transform 160ms ease;
+    }
+
+    .vega-dashboard .vega-button:hover {
+        background: var(--vega-red-dark);
+    }
+
+    .vega-dashboard .vega-button:focus-visible,
+    .vega-dashboard a:focus-visible {
+        outline: 3px solid #f3a2ad;
+        outline-offset: 3px;
+    }
+
+    .vega-dashboard .vega-button:active {
+        transform: translateY(1px);
+    }
+
+    .vega-dashboard .vega-button-secondary {
+        border-color: var(--vega-border);
+        background: #fff;
+        color: var(--vega-text);
+    }
+
+    .vega-dashboard .vega-button-secondary:hover {
+        border-color: #d6a0a8;
+        background: #fff7f8;
+        color: var(--vega-red-dark);
+    }
+
+    .vega-dashboard .vega-button-danger {
+        border-color: #f0d5d9;
+        background: #fff;
+        color: var(--vega-red-dark);
+    }
+
+    .vega-dashboard .vega-button-danger:hover {
+        background: var(--vega-red-light);
+    }
+
+    .vega-dashboard .vega-button-full {
+        width: 100%;
+    }
+
+    .vega-dashboard .vega-button form {
+        margin: 0;
+    }
+
+    /* Section headings */
+
+    .vega-section {
+        margin-top: 38px;
+    }
+
+    .vega-section-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .vega-section-heading h2 {
+        margin-bottom: 5px;
+    }
+
+    .vega-section-heading p {
+        margin-bottom: 0;
+        color: var(--vega-muted);
+        font-size: 0.9rem;
+    }
+
+    .vega-count {
+        display: inline-flex;
+        min-width: 30px;
+        min-height: 30px;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 9px;
+        border-radius: 9px;
+        background: var(--vega-red-light);
+        color: var(--vega-red-dark);
+        font-size: 0.83rem;
+        font-weight: 800;
+    }
+
+    /* Content grids and cards */
+
+    .vega-card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .vega-card {
+        min-width: 0;
+        padding: 23px;
+        border: 1px solid var(--vega-border);
+        border-radius: 17px;
+        background: #fff;
+        box-shadow: 0 4px 16px rgb(20 30 50 / 3%);
+    }
+
+    .vega-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .vega-card-header h3 {
+        overflow-wrap: anywhere;
+    }
+
+    .vega-card-icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        place-items: center;
+        border-radius: 13px;
+        background: var(--vega-red-light);
+        font-size: 1.3rem;
+    }
+
+    .vega-detail-list {
+        display: grid;
+        gap: 0;
+        margin: 0 0 18px;
+    }
+
+    .vega-detail-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f1f4;
+    }
+
+    .vega-detail-row:last-child {
+        border-bottom: 0;
+    }
+
+    .vega-detail-row dt {
+        color: var(--vega-muted);
+        font-size: 0.88rem;
+    }
+
+    .vega-detail-row dd {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 650;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    /* Status badges */
+
+    .vega-dashboard .status-pill {
+        display: inline-flex;
+        max-width: 100%;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        background: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.76rem;
+        font-weight: 750;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+
+    .vega-dashboard .status-notified,
+    .vega-dashboard .status-pending {
+        border-color: #f4dfab;
+        background: #fff7df;
+        color: #8a5b00;
+    }
+
+    .vega-dashboard .status-accepted,
+    .vega-dashboard .status-fulfilled,
+    .vega-dashboard .status-completed,
+    .vega-dashboard .status-verified {
+        border-color: #bce8ce;
+        background: var(--vega-green-light);
+        color: var(--vega-green);
+    }
+
+    .vega-dashboard .status-declined,
+    .vega-dashboard .status-cancelled,
+    .vega-dashboard .status-expired {
+        border-color: #f0c9ce;
+        background: #fff0f2;
+        color: #a51d32;
+    }
+
+    /* Match response actions */
+
+    .vega-match-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding-top: 17px;
+        border-top: 1px solid var(--vega-border);
+    }
+
+    .vega-match-actions form {
+        display: flex;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .vega-match-actions .vega-button {
+        width: 100%;
+        min-width: 0;
+        padding-inline: 10px;
+    }
+
+    .vega-card-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--vega-red);
+        font-size: 0.9rem;
+        font-weight: 750;
+        text-decoration: none;
+    }
+
+    .vega-card-link:hover {
+        color: var(--vega-red-dark);
+        text-decoration: underline;
+    }
+
+    .vega-subheading {
+        margin: 18px 0 10px;
+        font-size: 0.9rem;
+        font-weight: 750;
+    }
+
+    .vega-donor-status-list {
+        display: grid;
+        gap: 9px;
+        margin-bottom: 18px;
+    }
+
+    .vega-donor-status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--vega-bg);
+    }
+
+    .vega-donor-status-row span:first-child {
+        color: var(--vega-muted);
+        font-size: 0.84rem;
+    }
+
+    /* Empty states */
+
+    .vega-empty-state {
+        padding: 36px 22px;
+        border: 1px dashed #d9dee7;
+        border-radius: 16px;
+        background: #fff;
+        text-align: center;
+    }
+
+    .vega-empty-icon {
+        display: grid;
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 15px;
+        place-items: center;
+        border-radius: 17px;
+        background: var(--vega-red-light);
+        font-size: 1.55rem;
+    }
+
+    .vega-empty-state h3 {
+        margin-bottom: 7px;
+    }
+
+    .vega-empty-state p {
+        margin-bottom: 0;
+        color: var(--vega-muted);
+        font-size: 0.9rem;
+    }
+
+    .vega-dashboard-divider {
+        height: 1px;
+        margin: 38px 0;
+        border: 0;
+        background: var(--vega-border);
+    }
+
+    /* Responsive layout */
+
+    @media (max-width: 760px) {
+        .vega-dashboard {
+            padding: 22px 15px 40px;
+        }
+
+        .vega-summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .vega-summary-card {
+            padding: 17px;
+        }
+
+        .vega-card-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .vega-availability-panel {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .vega-availability-panel form,
+        .vega-availability-panel .vega-button {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 430px) {
+        .vega-welcome {
+            align-items: flex-start;
+        }
+
+        .vega-brand-mark {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            font-size: 1.5rem;
+        }
+
+        .vega-summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .vega-summary-card {
+            padding: 18px;
+        }
+
+        .vega-summary-top {
+            margin-bottom: 13px;
+        }
+
+        .vega-card {
+            padding: 18px;
+        }
+
+        .vega-section-heading {
+            align-items: center;
+        }
+
+        .vega-match-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .vega-detail-row {
+            gap: 10px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .vega-dashboard *,
+        .vega-dashboard *::before,
+        .vega-dashboard *::after {
+            scroll-behavior: auto !important;
+            transition: none !important;
+        }
+    }
+</style>
+
+<div class="vega-dashboard">
+
+    <!-- Welcome header -->
+    <header class="vega-welcome">
+        <div class="vega-welcome-copy">
+            <p class="vega-eyebrow">VEGA · {% trans "Donorlar platformasi" %}</p>
+
+            <h1>{% trans "Sizning boshqaruv paneli" %}</h1>
+
+            <p class="vega-welcome-description">
+                {% trans "Xush kelibsiz" %},
+                {{ user.first_name|default:user.username }}!
+                {% trans "Qon topshirish va so'rovlaringizni shu yerda boshqaring." %}
+            </p>
+        </div>
+
+        <div class="vega-brand-mark" aria-hidden="true">♥</div>
+    </header>
+
+    <!-- Summary cards -->
+    <section class="vega-summary-grid"
+             aria-label="{% trans 'Umumiy ma’lumotlar' %}">
+
+        <article class="vega-summary-card">
+            <div class="vega-summary-top">
+                <p class="vega-summary-label">
+                    {% trans "Siz yaratgan so'rovlar" %}
+                </p>
+                <span class="vega-summary-icon" aria-hidden="true">🩸</span>
+            </div>
+
+            <p class="vega-summary-number">{{ my_requests|length }}</p>
+
+            <p class="vega-summary-note">
+                {% trans "Jami qon so'rovlaringiz" %}
+            </p>
+        </article>
+
+        <article class="vega-summary-card">
+            <div class="vega-summary-top">
+                <p class="vega-summary-label">
+                    {% trans "Sizga mos so'rovlar" %}
+                </p>
+                <span class="vega-summary-icon" aria-hidden="true">♡</span>
+            </div>
+
+            <p class="vega-summary-number">{{ my_matches|length }}</p>
+
+            <p class="vega-summary-note">
+                {% trans "Sizga mos kelgan so'rovlar" %}
+            </p>
+        </article>
+
+        <article class="vega-summary-card">
+            <div class="vega-summary-top">
+                <p class="vega-summary-label">
+                    {% trans "Donorlik holati" %}
+                </p>
+                <span class="vega-summary-icon" aria-hidden="true">✚</span>
+            </div>
+
+            {% if donor_profile %}
+                {% if donor_profile.available %}
+                    <p class="vega-summary-number"
+                       style="color: var(--vega-green);">
+                        {% trans "Faol" %}
+                    </p>
+                    <p class="vega-summary-note">
+                        {% trans "Siz donorlikka tayyorsiz" %}
+                    </p>
+                {% else %}
+                    <p class="vega-summary-number">
+                        {% trans "Faol emas" %}
+                    </p>
+                    <p class="vega-summary-note">
+                        {% trans "Hozir donorlik uchun mavjud emassiz" %}
+                    </p>
+                {% endif %}
+            {% else %}
+                <p class="vega-summary-number">—</p>
+                <p class="vega-summary-note">
+                    {% trans "Donor profili mavjud emas" %}
+                </p>
+            {% endif %}
+        </article>
+
+    </section>
+
+    <!-- Donor availability -->
+    {% if donor_profile %}
+    <section class="vega-availability-panel">
+        <div class="vega-availability-copy">
+            <span
+                class="vega-availability-indicator {% if donor_profile.available %}is-available{% endif %}"
+                aria-hidden="true">
+            </span>
+
+            <div>
+                <h2>{% trans "Donorlik mavjudligi" %}</h2>
+
+                {% if donor_profile.available %}
+                    <p>
+                        {% trans "Siz hozir qon topshirishga tayyor donor sifatida ko'rinyapsiz." %}
+                    </p>
+                {% else %}
+                    <p>
+                        {% trans "Siz hozir mavjud donor sifatida ko'rinmayapsiz." %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post" action="{% url 'toggle_availability' %}">
+            {% csrf_token %}
+
+            <button type="submit" class="vega-button
+                {% if donor_profile.available %}vega-button-secondary{% endif %}">
+                {% if donor_profile.available %}
+                    {% trans "Mavjud emas deb belgilash" %}
+                {% else %}
+                    {% trans "Mavjud deb belgilash" %}
+                {% endif %}
+            </button>
+        </form>
+    </section>
     {% endif %}
-</p>
 
-<form method="post" action="{% url 'toggle_availability' %}">
-    {% csrf_token %}
-    <button type="submit">
-        {% if donor_profile.available %}
-            {% trans "Mavjud emas deb belgilash" %}
-        {% else %}
-            {% trans "Mavjud deb belgilash" %}
-        {% endif %}
-    </button>
-</form>
+    <!-- Matches for this donor -->
+    {% if donor_profile %}
+    <section class="vega-section">
+        <div class="vega-section-heading">
+            <div>
+                <h2>{% trans "Sizga mos so'rovlar" %}</h2>
+                <p>
+                    {% trans "Siz yordam bera olishingiz mumkin bo'lgan qon so'rovlari." %}
+                </p>
+            </div>
 
-<h2>{% trans "Sizga mos so'rovlar" %}</h2>
-{% for match in my_matches %}
-<div class="match-card">
-    <p><strong>{% trans "Shifoxona" %}:</strong> {{ match.blood_request.hospital_name }}</p>
-    <p><strong>{% trans "Masofa" %}:</strong> {{ match.distance_km }} km</p>
-    <p><strong>{% trans "Holat" %}:</strong> <span class="status-pill status-{{ match.status }}">{{ match.get_status_display }}</span></p>
+            <span class="vega-count">{{ my_matches|length }}</span>
+        </div>
 
-    {% if match.status == "notified" %}
-    <form method="post" action="{% url 'respond_to_match' match.id 'accept' %}">
-        {% csrf_token %}
-        <button type="submit" class="button">
-            {% trans "Yordam bera olaman" %}
-        </button>
-    </form>
+        <div class="vega-card-grid">
+            {% for match in my_matches %}
+            <article class="vega-card">
+                <div class="vega-card-header">
+                    <div>
+                        <p class="vega-eyebrow">
+                            {% trans "Donorlik so'rovi" %}
+                        </p>
+                        <h3>{{ match.blood_request.hospital_name }}</h3>
+                    </div>
 
-    <form method="post" action="{% url 'respond_to_match' match.id 'decline' %}">
-        {% csrf_token %}
-        <button type="submit">
-            {% trans "Yordam bera olmayman" %}
-        </button>
-    </form>
+                    <span class="vega-card-icon" aria-hidden="true">✚</span>
+                </div>
+
+                <dl class="vega-detail-list">
+                    <div class="vega-detail-row">
+                        <dt>{% trans "Shifoxona" %}</dt>
+                        <dd>{{ match.blood_request.hospital_name }}</dd>
+                    </div>
+
+                    <div class="vega-detail-row">
+                        <dt>{% trans "Masofa" %}</dt>
+                        <dd>{{ match.distance_km }} km</dd>
+                    </div>
+
+                    <div class="vega-detail-row">
+                        <dt>{% trans "Holat" %}</dt>
+                        <dd>
+                            <span class="status-pill status-{{ match.status }}">
+                                {{ match.get_status_display }}
+                            </span>
+                        </dd>
+                    </div>
+                </dl>
+
+                {% if match.status == "notified" %}
+                <div class="vega-match-actions">
+                    <form method="post"
+                          action="{% url 'respond_to_match' match.id 'accept' %}">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="vega-button vega-button-full">
+                            {% trans "Yordam bera olaman" %}
+                        </button>
+                    </form>
+
+                    <form method="post"
+                          action="{% url 'respond_to_match' match.id 'decline' %}">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="vega-button vega-button-danger vega-button-full">
+                            {% trans "Yordam bera olmayman" %}
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </article>
+
+            {% empty %}
+            <div class="vega-empty-state">
+                <div class="vega-empty-icon" aria-hidden="true">♡</div>
+                <h3>{% trans "Hozircha mos so'rovlar yo'q" %}</h3>
+                <p>
+                    {% trans "Sizga mos yangi qon so'rovlari paydo bo'lsa, ular shu yerda ko'rinadi." %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
     {% endif %}
+
+    <hr class="vega-dashboard-divider">
+
+    <!-- Requests created by this user -->
+    <section class="vega-section">
+        <div class="vega-section-heading">
+            <div>
+                <h2>{% trans "Siz yaratgan qon so'rovlari" %}</h2>
+                <p>
+                    {% trans "So'rovlaringiz va donorlar javoblarini kuzatib boring." %}
+                </p>
+            </div>
+
+            <span class="vega-count">{{ my_requests|length }}</span>
+        </div>
+
+        <div class="vega-card-grid">
+            {% for blood_request in my_requests %}
+            <article class="vega-card">
+                <div class="vega-card-header">
+                    <div>
+                        <p class="vega-eyebrow">
+                            {% trans "Qon so'rovi" %}
+                        </p>
+                        <h3>{{ blood_request.hospital_name }}</h3>
+                    </div>
+
+                    <span class="vega-card-icon" aria-hidden="true">🩸</span>
+                </div>
+
+                <dl class="vega-detail-list">
+                    <div class="vega-detail-row">
+                        <dt>{% trans "Qon guruhi" %}</dt>
+                        <dd>{{ blood_request.blood_type }}</dd>
+                    </div>
+
+                    <div class="vega-detail-row">
+                        <dt>{% trans "So'rov holati" %}</dt>
+                        <dd>
+                            <span class="status-pill status-{{ blood_request.status }}">
+                                {{ blood_request.get_status_display }}
+                            </span>
+                        </dd>
+                    </div>
+
+                    <div class="vega-detail-row">
+                        <dt>{% trans "Tasdiqlangan" %}</dt>
+                        <dd>
+                            {% if blood_request.verified %}
+                                <span class="status-pill status-verified">
+                                    {% trans "Ha" %}
+                                </span>
+                            {% else %}
+                                <span class="status-pill status-pending">
+                                    {% trans "Kutilmoqda" %}
+                                </span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                </dl>
+
+                <h4 class="vega-subheading">
+                    {% trans "Donorlar holati" %}
+                </h4>
+
+                <div class="vega-donor-status-list">
+                    {% for match in blood_request.matches.all %}
+                    <div class="vega-donor-status-row">
+                        <span>{% trans "Donor holati" %}</span>
+
+                        <span class="status-pill status-{{ match.status }}">
+                            {{ match.get_status_display }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <p class="vega-muted" style="font-size: 0.88rem;">
+                        {% trans "Hozircha donor topilmadi." %}
+                    </p>
+                    {% endfor %}
+                </div>
+
+                <a class="vega-card-link"
+                   href="{% url 'request_detail' blood_request.id %}">
+                    {% trans "So'rovni ko'rish" %}
+                    <span aria-hidden="true">→</span>
+                </a>
+            </article>
+
+            {% empty %}
+            <div class="vega-empty-state">
+                <div class="vega-empty-icon" aria-hidden="true">🩸</div>
+                <h3>{% trans "Siz hali qon so'rovi yaratmagansiz" %}</h3>
+                <p>
+                    {% trans "Yaratgan so'rovlaringiz shu yerda ko'rinadi." %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
 </div>
-{% empty %}
-<p>{% trans "Hozircha mos so'rovlar yo'q." %}</p>
-{% endfor %}
-{% endif %}
-
-<hr>
-
-<h2>{% trans "Siz yaratgan qon so'rovlari" %}</h2>
-
-{% for blood_request in my_requests %}
-<div class="match-card">
-    <h3>{{ blood_request.hospital_name }}</h3>
-
-    <p>
-        <strong>{% trans "Qon guruhi" %}:</strong>
-        {{ blood_request.blood_type }}
-    </p>
-
-    <p>
-        <strong>{% trans "So'rov holati" %}:</strong>
-        {{ blood_request.get_status_display }}
-    </p>
-
-    <p>
-        <strong>{% trans "Tasdiqlangan" %}:</strong>
-        {% if blood_request.verified %}
-            {% trans "Ha" %}
-        {% else %}
-            {% trans "Kutilmoqda" %}
-        {% endif %}
-    </p>
-
-    <h4>{% trans "Donorlar holati" %}</h4>
-
-    {% for match in blood_request.matches.all %}
-        <p>
-            {% trans "Donor holati" %}: {{ match.get_status_display }}
-        </p>
-    {% empty %}
-        <p>{% trans "Hozircha donor topilmadi." %}</p>
-    {% endfor %}
-
-    <a href="{% url 'request_detail' blood_request.id %}">
-        {% trans "So'rovni ko'rish" %}
-    </a>
-</div>
-{% empty %}
-<p>{% trans "Siz hali qon so'rovi yaratmagansiz." %}</p>
-{% endfor %}
 {% endblock %}
